@@ -1,0 +1,32 @@
+{
+  "name": "retocam",
+  "version": "1.0.0",
+  "description": "Trobada de percussió de les corts",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlbertSabate/retocam.git"
+  },
+  "keywords": [
+    "trobada",
+    "percussió",
+    "tabalada",
+    "les corts",
+    "diables"
+  ],
+  "author": "Albert Sabaté",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AlbertSabate/retocam/issues"
+  },
+  "homepage": "https://github.com/AlbertSabate/retocam#readme",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "mongoose": "^4.7.7"
+  }
+}
