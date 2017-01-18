@@ -1,7 +1,7 @@
 var config = {};
 
 // Port
-config.port = process.env.PORT || 1234;
+config.port = process.env.PORT || 8081;
 
 // Secret
 config.secret = 'ilovediables';
