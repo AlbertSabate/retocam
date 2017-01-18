@@ -55,35 +55,65 @@ module.exports = function(express, app, jwt) {
   });
 
   router.post('/users', function(req, res) {
-    var user = new User({
-      name: req.body.name,
-      email: req.body.email,
-      password: User.generateHash(req.body.password),
-      authToken: '',
-      admin: false,
-      meat: req.body.meat,
-      salad: req.body.salad,
-      tomato: req.body.tomato,
-      goatCheese: req.body.goatCheese,
-      emmentalCheese: req.body.emmentalCheese,
-      onion: req.body.onion,
-      bacon: req.body.bacon,
-      drink: req.body.drink,
-      comments: req.body.comments,
-      status: req.body.status
-    });
+    if (typeof req.body.name === 'undefined' || req.body.name < 3) {
+      return res.json({
+        success: true,
+        message: 'NAME_REQUIRED'
+      });
+    }
+    if (typeof req.body.email === 'undefined' || req.body.email < 5) {
+      return res.json({
+        success: true,
+        message: 'EMAIL_REQUIRED'
+      });
+    }
+    if (typeof req.body.password === 'undefined' || req.body.password < 4) {
+      return res.json({
+        success: true,
+        message: 'PASSWORD_REQUIRED'
+      });
+    }
 
-    user.save(function(err) {
-      if (err) {
+    User.findOne({
+      email: req.body.email
+    }, function(err, user) {
+      if (err || user) {
         return res.json({
           success: false,
-          message: 'USER_CREATION_ERROR'
+          message: 'USER_FOUND'
         });
-      };
+      }
 
-      res.json({
-        success: true,
-        message: 'USER_CREATED'
+      var user = new User({
+        name: req.body.name,
+        email: req.body.email,
+        authToken: '',
+        admin: false,
+        meat: req.body.meat,
+        salad: req.body.salad,
+        tomato: req.body.tomato,
+        goatCheese: req.body.goatCheese,
+        emmentalCheese: req.body.emmentalCheese,
+        onion: req.body.onion,
+        bacon: req.body.bacon,
+        drink: req.body.drink,
+        comments: req.body.comments,
+        status: req.body.status
+      });
+      user.password = user.generateHash(req.body.password);
+
+      user.save(function(err) {
+        if (err) {
+          return res.json({
+            success: false,
+            message: 'USER_CREATION_ERROR'
+          });
+        };
+
+        res.json({
+          success: true,
+          message: 'USER_CREATED'
+        });
       });
     });
   });
@@ -159,7 +189,7 @@ module.exports = function(express, app, jwt) {
         });
       }
 
-      if (!user.isAdmin() && req.user.id !== req.params.userId) {
+      if (!user.isAdmin() && req.user._id !== req.params.userId) {
         return res.json({
           success: false,
           message: 'UNAUTHORIZED'
@@ -179,7 +209,7 @@ module.exports = function(express, app, jwt) {
         });
       }
 
-      if (!user.isAdmin() && req.user.id !== req.params.userId) {
+      if (!user.isAdmin() && req.user._id !== req.params.userId) {
         return res.json({
           success: false,
           message: 'UNAUTHORIZED'

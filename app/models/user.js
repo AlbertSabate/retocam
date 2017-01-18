@@ -4,7 +4,10 @@ var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
   name: String,
-  email: String,
+  email: {
+    type: String,
+    index: true
+  },
   password: String,
   authToken: String,
   admin: Boolean,
@@ -32,7 +35,8 @@ var UserSchema = new Schema({
     enum: [
       'active',
       'inactive'
-    ]
+    ],
+    default: 'active'
   },
   updatedAt: Date,
   createdAt: {
