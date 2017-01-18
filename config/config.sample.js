@@ -3,6 +3,9 @@ var config = {};
 // Port
 config.port = process.env.PORT || 1234;
 
+// Secret
+config.secret = 'ilovediables';
+
 // Mongoose
 config.mongooseUri = '';
 config.mongooseOptions = {
@@ -11,6 +14,6 @@ config.mongooseOptions = {
   replset: { rs_name: 'myReplicaSetName' },
   user: 'myUserName',
   pass: 'myPassword'
-}
+};
 
 module.exports = config;
