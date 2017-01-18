@@ -8,7 +8,10 @@ var UserSchema = new Schema({
     type: String,
     index: true
   },
-  password: String,
+  password: {
+    type: String,
+    select: false
+  },
   authToken: String,
   admin: Boolean,
   meat: Boolean,
@@ -46,7 +49,7 @@ var UserSchema = new Schema({
 });
 
 UserSchema.methods.isAdmin = function() {
-  return (this.local.admin) ? true : false;
+  return (this.admin) ? true : false;
 };
 
 UserSchema.methods.generateHash = function(password) {
@@ -55,7 +58,7 @@ UserSchema.methods.generateHash = function(password) {
 
 // checking if password is valid
 UserSchema.methods.validPassword = function(password) {
-  return bcrypt.compareSync(password, this.local.password);
+  return bcrypt.compareSync(password, this.password);
 };
 
 module.exports = mongoose.model('User', UserSchema);

@@ -13,7 +13,7 @@ module.exports = function(express, app, jwt) {
     // find the user
     User.findOne({
       email: req.body.email
-    }, function(err, user) {
+    }).select('email password').exec(function(err, user) {
       if (err || !user) {
         return res.json({
           success: false,
@@ -30,25 +30,31 @@ module.exports = function(express, app, jwt) {
       }
 
       // create a token
-      var token = jwt.sign(user, app.get('superSecret'), {
-        email: req.body.email,
-        expiresInMinutes: (req.body.extended) ? 1440 * 30 : 1440 // expires in 1 month : 24 hours
-      });
-
-      user.authToken = token;
-      user.save(function(err) {
+      jwt.sign(user, app.get('superSecret'), {
+        expiresIn: (req.body.extended) ? '1m' : '1d' // expires in 1 month : 24 hours
+      }, function(err, token) {
         if (err) {
-          res.json({
+          return res.json({
             success: false,
-            message: 'AUTH_ERROR'
+            message: 'TOKEN_ERROR'
           });
         }
 
-        // return the information including token as JSON
-        res.json({
-          success: true,
-          message: 'AUTH_SUCCESS',
-          token: token
+        user.authToken = token;
+        user.save(function(err) {
+          if (err) {
+            res.json({
+              success: false,
+              message: 'AUTH_ERROR'
+            });
+          }
+
+          // return the information including token as JSON
+          res.json({
+            success: true,
+            message: 'AUTH_SUCCESS',
+            token: token
+          });
         });
       });
     });
@@ -142,7 +148,7 @@ module.exports = function(express, app, jwt) {
       }
 
       User.findOne({
-        email: decoded.email
+        email: decoded._doc.email
       }, function(err, user) {
         if (err || !user) {
           return res.json({
@@ -168,7 +174,7 @@ module.exports = function(express, app, jwt) {
   // --- PROTECTED ROUTES BY TOKEN
 
   router.get('/users', function(req, res) {
-    if (!user.isAdmin()) {
+    if (!req.user.isAdmin()) {
       return res.json({
         success: false,
         message: 'UNAUTHORIZED'
@@ -189,7 +195,7 @@ module.exports = function(express, app, jwt) {
         });
       }
 
-      if (!user.isAdmin() && req.user._id !== req.params.userId) {
+      if (!user.isAdmin() && !req.user._id.equals(req.params.userId)) {
         return res.json({
           success: false,
           message: 'UNAUTHORIZED'
@@ -209,21 +215,19 @@ module.exports = function(express, app, jwt) {
         });
       }
 
-      if (!user.isAdmin() && req.user._id !== req.params.userId) {
+      if (!user.isAdmin() && !req.user._id.equals(req.params.userId)) {
         return res.json({
           success: false,
           message: 'UNAUTHORIZED'
         });
       }
 
-      if (typeof req.body.name !== 'undefined') {
+      if (typeof req.body.name !== 'undefined' || req.body.name < 3) {
         user.name = req.body.name;
       }
-      if (typeof req.body.email !== 'undefined') {
-        user.email = req.body.email;
-      }
-      if (typeof req.body.password !== 'undefined') {
-        user.password = User.generateHash(req.body.password);
+      if (typeof req.body.password !== 'undefined' || req.body.password < 4) {
+        user.password = user.generateHash(req.body.password);
+        user.authToken = '';
       }
       if (typeof req.body.admin !== 'undefined' && user.isAdmin()) { // ADMIN
         user.admin = req.body.admin;
@@ -259,17 +263,43 @@ module.exports = function(express, app, jwt) {
         user.status = req.body.status;
       }
 
-      user.updatedAt = Date.now;
-      user.save(function(err) {
-        if (err) {
-          res.json({
-            success: false,
-            message: 'USER_UPDATE_ERROR'
-          });
-        }
+      user.updatedAt = Date.now();
 
-        res.json(user);
-      });
+      if (typeof req.body.email !== 'undefined' && req.body.email >= 5) {
+        User.findOne({
+          email: req.body.email
+        }, function(err, checkUser) {
+          if (err || checkUser) {
+            return res.json({
+              success: false,
+              message: 'USER_FOUND'
+            });
+          }
+
+          user.email = req.body.email;
+          user.save(function(err) {
+            if (err) {
+              return res.json({
+                success: false,
+                message: 'USER_UPDATE_ERROR'
+              });
+            }
+
+            res.json(user);
+          });
+        });
+      } else {
+        user.save(function(err) {
+          if (err) {
+            return res.json({
+              success: false,
+              message: 'USER_UPDATE_ERROR'
+            });
+          }
+
+          res.json(user);
+        });
+      }
     });
   });
 
