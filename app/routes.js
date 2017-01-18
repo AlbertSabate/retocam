@@ -95,7 +95,7 @@ module.exports = function(express, app, jwt) {
         email: req.body.email,
         authToken: '',
         admin: false,
-        meat: req.body.meat,
+        eatType: req.body.eatType,
         salad: req.body.salad,
         tomato: req.body.tomato,
         goatCheese: req.body.goatCheese,
@@ -149,7 +149,7 @@ module.exports = function(express, app, jwt) {
 
       User.findOne({
         email: decoded._doc.email
-      }, function(err, user) {
+      }).select('+password +authToken').exec(function(err, user) {
         if (err || !user) {
           return res.json({
             success: false,
@@ -157,7 +157,6 @@ module.exports = function(express, app, jwt) {
           });
         }
 
-        // check if password matches
         if (user.authToken !== token) {
           return res.json({
             success: false,
@@ -174,31 +173,29 @@ module.exports = function(express, app, jwt) {
   // --- PROTECTED ROUTES BY TOKEN
 
   router.get('/users', function(req, res) {
+    var filter = {};
     if (!req.user.isAdmin()) {
+      filter._id = req.user._id;
+    }
+
+    User.find(filter, function(err, users) {
+      res.json(users);
+    });
+  });
+
+  router.get('/users/:userId', function(req, res) {
+    if (!req.user.isAdmin() && !req.user._id.equals(req.params.userId)) {
       return res.json({
         success: false,
         message: 'UNAUTHORIZED'
       });
     }
 
-    User.find({}, function(err, users) {
-      res.json(users);
-    });
-  });
-
-  router.get('/users/:userId', function(req, res) {
     User.findById(req.params.userId, function(err, user) {
       if (err) {
         return res.json({
           success: false,
           message: 'USER_NOT_FOUND'
-        });
-      }
-
-      if (!user.isAdmin() && !req.user._id.equals(req.params.userId)) {
-        return res.json({
-          success: false,
-          message: 'UNAUTHORIZED'
         });
       }
 
@@ -207,18 +204,18 @@ module.exports = function(express, app, jwt) {
   });
 
   router.put('/users/:userId', function(req, res) {
+    if (!req.user.isAdmin() && !req.user._id.equals(req.params.userId)) {
+      return res.json({
+        success: false,
+        message: 'UNAUTHORIZED'
+      });
+    }
+
     User.findById(req.params.userId, function(err, user) {
       if (err) {
         return res.json({
           success: false,
           message: 'USER_NOT_FOUND'
-        });
-      }
-
-      if (!user.isAdmin() && !req.user._id.equals(req.params.userId)) {
-        return res.json({
-          success: false,
-          message: 'UNAUTHORIZED'
         });
       }
 
@@ -232,8 +229,8 @@ module.exports = function(express, app, jwt) {
       if (typeof req.body.admin !== 'undefined' && user.isAdmin()) { // ADMIN
         user.admin = req.body.admin;
       }
-      if (typeof req.body.meat !== 'undefined') {
-        user.meat = req.body.meat;
+      if (typeof req.body.eatType !== 'undefined') {
+        user.eatType = req.body.eatType;
       }
       if (typeof req.body.salad !== 'undefined') {
         user.salad = req.body.salad;

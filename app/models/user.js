@@ -12,9 +12,19 @@ var UserSchema = new Schema({
     type: String,
     select: false
   },
-  authToken: String,
+  authToken: {
+    type: String,
+    select: false
+  },
   admin: Boolean,
-  meat: Boolean,
+  eatType: {
+    type: String,
+    enum: [
+      'all',
+      'veggy',
+      'vegan'
+    ]
+  },
   salad: Boolean,
   tomato: Boolean,
   goatCheese: Boolean,
@@ -24,12 +34,12 @@ var UserSchema = new Schema({
   drink: {
     type: String,
     enum: [
-      'Beer',
-      'Coca-Cola',
-      'Water',
-      'Lemon-Fanta',
-      'Orange-Fanta',
-      'Nothing'
+      'beer',
+      'coca-cola',
+      'water',
+      'lemon-fanta',
+      'orange-fanta',
+      'nothing'
     ]
   },
   comments: String,
