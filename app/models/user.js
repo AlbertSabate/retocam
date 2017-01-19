@@ -3,20 +3,31 @@ var bcrypt   = require('bcrypt-nodejs');
 var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
   email: {
     type: String,
-    index: true
+    index: true,
+    required: true,
+    trim: true
   },
   password: {
     type: String,
+    required: true,
     select: false
   },
   authToken: {
     type: String,
     select: false
   },
-  admin: Boolean,
+  admin: {
+    type: Boolean,
+    default: false
+  },
+  group: String,
   eatType: {
     type: String,
     enum: [
@@ -25,12 +36,10 @@ var UserSchema = new Schema({
       'vegan'
     ]
   },
-  salad: Boolean,
-  tomato: Boolean,
-  goatCheese: Boolean,
-  emmentalCheese: Boolean,
-  onion: Boolean,
-  bacon: Boolean,
+  burguerIngredients: {
+    type: Array
+    // TODO Validate ['salad', 'tomato', 'goatCheese', 'emmentalCheese', 'onion', 'bacon']
+  },
   drink: {
     type: String,
     enum: [

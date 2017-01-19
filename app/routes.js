@@ -95,13 +95,9 @@ module.exports = function(express, app, jwt) {
         email: req.body.email,
         authToken: '',
         admin: false,
+        group: req.body.group,
         eatType: req.body.eatType,
-        salad: req.body.salad,
-        tomato: req.body.tomato,
-        goatCheese: req.body.goatCheese,
-        emmentalCheese: req.body.emmentalCheese,
-        onion: req.body.onion,
-        bacon: req.body.bacon,
+        burguerIngredients: req.body.burguerIngredients,
         drink: req.body.drink,
         comments: req.body.comments,
         status: req.body.status
@@ -229,26 +225,14 @@ module.exports = function(express, app, jwt) {
       if (typeof req.body.admin !== 'undefined' && user.isAdmin()) { // ADMIN
         user.admin = req.body.admin;
       }
+      if (typeof req.body.group !== 'undefined') {
+        user.group = req.body.group;
+      }
       if (typeof req.body.eatType !== 'undefined') {
         user.eatType = req.body.eatType;
       }
-      if (typeof req.body.salad !== 'undefined') {
-        user.salad = req.body.salad;
-      }
-      if (typeof req.body.tomato !== 'undefined') {
-        user.tomato = req.body.tomato;
-      }
-      if (typeof req.body.goatCheese !== 'undefined') {
-        user.goatCheese = req.body.goatCheese;
-      }
-      if (typeof req.body.emmentalCheese !== 'undefined') {
-        user.emmentalCheese = req.body.emmentalCheese;
-      }
-      if (typeof req.body.onion !== 'undefined') {
-        user.onion = req.body.onion;
-      }
-      if (typeof req.body.bacon !== 'undefined') {
-        user.bacon = req.body.bacon;
+      if (typeof req.body.burguerIngredients !== 'undefined') {
+        user.burguerIngredients = req.body.burguerIngredients;
       }
       if (typeof req.body.drink !== 'undefined') {
         user.drink = req.body.drink;
