@@ -4,6 +4,24 @@ module.exports = function(express, app, jwt) {
   // models
   var User = require('./models/user');
 
+  app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Credentials', false);
+    res.setHeader('Access-Control-Max-Age', '86400');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, x-access-token');
+
+    if (req.method === 'OPTIONS') {
+      // IE8 does not allow domains to be specified, just the *
+      // headers["Access-Control-Allow-Origin"] = req.headers.origin;
+
+      res.writeHead(200);
+      res.end();
+    } else {
+      next();
+    }
+  });
+
   // --- NO PROTECTED FUNCTIONS
   router.get('/', function(req, res) {
     res.json({ message: 'Welcome to Diables de les Corts API!' });
@@ -67,23 +85,11 @@ module.exports = function(express, app, jwt) {
         message: 'NAME_REQUIRED'
       });
     }
-    if (typeof req.body.email === 'undefined' || req.body.email < 5) {
-      return res.json({
-        success: true,
-        message: 'EMAIL_REQUIRED'
-      });
-    }
-    if (typeof req.body.password === 'undefined' || req.body.password < 4) {
-      return res.json({
-        success: true,
-        message: 'PASSWORD_REQUIRED'
-      });
-    }
 
     User.findOne({
       email: req.body.email
     }, function(err, user) {
-      if (err || user) {
+      if (err || user && typeof req.body.email !== 'undefined') {
         return res.json({
           success: false,
           message: 'USER_FOUND'
@@ -128,7 +134,7 @@ module.exports = function(express, app, jwt) {
 
     // decode token
     if (!token) {
-      return res.status(403).send({
+      return res.json({
           success: false,
           message: 'NO_TOKEN'
       });

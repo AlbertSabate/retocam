@@ -11,12 +11,10 @@ var UserSchema = new Schema({
   email: {
     type: String,
     index: true,
-    required: true,
     trim: true
   },
   password: {
     type: String,
-    required: true,
     select: false
   },
   authToken: {
