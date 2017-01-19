@@ -97,7 +97,7 @@ module.exports = function(express, app, jwt) {
         admin: false,
         group: req.body.group,
         eatType: req.body.eatType,
-        burguerIngredients: req.body.burguerIngredients,
+        burgerIngredients: req.body.burgerIngredients,
         drink: req.body.drink,
         comments: req.body.comments,
         status: req.body.status
@@ -231,8 +231,8 @@ module.exports = function(express, app, jwt) {
       if (typeof req.body.eatType !== 'undefined') {
         user.eatType = req.body.eatType;
       }
-      if (typeof req.body.burguerIngredients !== 'undefined') {
-        user.burguerIngredients = req.body.burguerIngredients;
+      if (typeof req.body.burgerIngredients !== 'undefined') {
+        user.burgerIngredients = req.body.burgerIngredients;
       }
       if (typeof req.body.drink !== 'undefined') {
         user.drink = req.body.drink;

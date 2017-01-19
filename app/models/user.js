@@ -36,7 +36,7 @@ var UserSchema = new Schema({
       'vegan'
     ]
   },
-  burguerIngredients: {
+  burgerIngredients: {
     type: Array
     // TODO Validate ['salad', 'tomato', 'goatCheese', 'emmentalCheese', 'onion', 'bacon']
   },
