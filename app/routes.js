@@ -28,6 +28,12 @@ module.exports = function(express, app, jwt) {
   });
 
   router.post('/authenticate', function(req, res) {
+    if (typeof req.body.email === 'undefined') {
+      return res.json({
+        success: false,
+        message: 'EMAIL_REQUIRED'
+      });
+    }
     // find the user
     User.findOne({
       email: req.body.email
@@ -86,30 +92,46 @@ module.exports = function(express, app, jwt) {
       });
     }
 
-    User.findOne({
-      email: req.body.email
-    }, function(err, user) {
-      if (err || user && typeof req.body.email !== 'undefined') {
-        return res.json({
-          success: false,
-          message: 'USER_FOUND'
-        });
-      }
+    var user = new User({
+      name: req.body.name,
+      email: req.body.email,
+      authToken: '',
+      admin: false,
+      group: req.body.group,
+      eatType: req.body.eatType,
+      burgerIngredients: req.body.burgerIngredients,
+      drink: req.body.drink,
+      comments: req.body.comments,
+      status: req.body.status
+    });
+    user.password = user.generateHash(req.body.password);
 
-      var user = new User({
-        name: req.body.name,
-        email: req.body.email,
-        authToken: '',
-        admin: false,
-        group: req.body.group,
-        eatType: req.body.eatType,
-        burgerIngredients: req.body.burgerIngredients,
-        drink: req.body.drink,
-        comments: req.body.comments,
-        status: req.body.status
+    if (typeof req.body.email !== 'undefined') {
+      User.findOne({
+        email: req.body.email
+      }, function(err, userData) {
+        if (err || userData) {
+          return res.json({
+            success: false,
+            message: 'USER_FOUND'
+          });
+
+          user.save(function(err) {
+            if (err) {
+              return res.json({
+                success: false,
+                message: 'USER_CREATION_ERROR'
+              });
+            };
+
+            res.json({
+              success: true,
+              message: 'USER_CREATED'
+            });
+          });
+        }
       });
-      user.password = user.generateHash(req.body.password);
-
+    } else {
       user.save(function(err) {
         if (err) {
           return res.json({
@@ -123,7 +145,7 @@ module.exports = function(express, app, jwt) {
           message: 'USER_CREATED'
         });
       });
-    });
+    }
   });
 
   // MiddleWare to validate token
@@ -252,7 +274,7 @@ module.exports = function(express, app, jwt) {
 
       user.updatedAt = Date.now();
 
-      if (typeof req.body.email !== 'undefined' && req.body.email >= 5) {
+      if (typeof req.body.email !== 'undefined') {
         User.findOne({
           email: req.body.email
         }, function(err, checkUser) {
