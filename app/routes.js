@@ -227,6 +227,38 @@ module.exports = function(express, app, jwt) {
     });
   });
 
+  router.delete('/users/:userId', function(req, res) {
+    if (!req.user.isAdmin() && !req.user._id.equals(req.params.userId)) {
+      return res.json({
+        success: false,
+        message: 'UNAUTHORIZED'
+      });
+    }
+
+    User.findById(req.params.userId, function(err, user) {
+      if (err) {
+        return res.json({
+          success: false,
+          message: 'USER_NOT_FOUND'
+        });
+      }
+
+      user.remove(function (err) {
+        if (err) {
+          return res.json({
+            success: false,
+            message: 'NOT_REMOVED'
+          });
+        }
+
+        return res.json({
+          success: true,
+          message: 'REMOVED'
+        });
+      });
+    });
+  });
+
   router.put('/users/:userId', function(req, res) {
     if (!req.user.isAdmin() && !req.user._id.equals(req.params.userId)) {
       return res.json({
