@@ -92,6 +92,13 @@ module.exports = function(express, app, jwt) {
       });
     }
 
+    if (typeof req.body.group === 'undefined' || req.body.group < 3) {
+      return res.json({
+        success: true,
+        message: 'GROUP_REQUIRED'
+      });
+    }
+
     var user = new User({
       name: req.body.name,
       email: req.body.email,
@@ -326,7 +333,10 @@ module.exports = function(express, app, jwt) {
               });
             }
 
-            res.json(user);
+            return res.json({
+              success: true,
+              message: 'USER_UPDATED'
+            });
           });
         });
       } else {
@@ -338,7 +348,10 @@ module.exports = function(express, app, jwt) {
             });
           }
 
-          res.json(user);
+          return res.json({
+            success: true,
+            message: 'USER_UPDATED'
+          });
         });
       }
     });
