@@ -148,6 +148,17 @@ module.exports = function(express, app, jwt) {
     }
   });
 
+  router.get('/users', function(req, res) {
+    var filter = {};
+    if (req.query.group) {
+      filter.group = req.query.group;
+    }
+
+    User.find(filter, function(err, users) {
+      res.json(users);
+    });
+  });
+
   // MiddleWare to validate token
   router.use(function(req, res, next) {
 
@@ -195,17 +206,6 @@ module.exports = function(express, app, jwt) {
   });
 
   // --- PROTECTED ROUTES BY TOKEN
-
-  router.get('/users', function(req, res) {
-    var filter = {};
-    if (!req.user.isAdmin()) {
-      filter._id = req.user._id;
-    }
-
-    User.find(filter, function(err, users) {
-      res.json(users);
-    });
-  });
 
   router.get('/users/:userId', function(req, res) {
     if (!req.user.isAdmin() && !req.user._id.equals(req.params.userId)) {
