@@ -122,21 +122,21 @@ module.exports = function(express, app, jwt) {
             success: false,
             message: 'USER_FOUND'
           });
-
-          user.save(function(err) {
-            if (err) {
-              return res.json({
-                success: false,
-                message: 'USER_CREATION_ERROR'
-              });
-            };
-
-            res.json({
-              success: true,
-              message: 'USER_CREATED'
-            });
-          });
         }
+
+        user.save(function(err) {
+          if (err) {
+            return res.json({
+              success: false,
+              message: 'USER_CREATION_ERROR'
+            });
+          };
+
+          res.json({
+            success: true,
+            message: 'USER_CREATED'
+          });
+        });
       });
     } else {
       user.save(function(err) {
