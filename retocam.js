@@ -44,4 +44,4 @@ var httpsServer = https.createServer(credentials, app);
 httpServer.listen(config.port);
 httpsServer.listen(config.securePort);
 console.log('Server on port: ' + config.port);
-console.log('Secure Server on port: ' + config.port);
+console.log('Secure Server on port: ' + config.securePort);
