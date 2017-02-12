@@ -1,6 +1,9 @@
 // server.js
 
 // call the packages we need
+var fs = require('fs');
+var http = require('http');
+var https = require('https');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -9,9 +12,12 @@ var jwt = require('jsonwebtoken');
 
 // Config files
 var config = require('./config/config');
+
+var privateKey  = fs.readFileSync(config.privateKey, 'utf8');
+var certificate = fs.readFileSync(config.certificate, 'utf8');
 var credentials = {
-  key: config.privateKey,
-  cert: config.certificate
+  key: privateKey,
+  cert: certificate
 };
 
 // DB Connect
