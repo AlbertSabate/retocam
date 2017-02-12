@@ -36,7 +36,7 @@ var UserSchema = new Schema({
   },
   burgerIngredients: {
     type: Array
-    // TODO Validate ['salad', 'tomato', 'goatCheese', 'emmentalCheese', 'onion', 'bacon']
+    // TODO Validate ['salad', 'tomato', 'cheese', 'bacon']
   },
   drink: {
     type: String,
