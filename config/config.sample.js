@@ -1,7 +1,8 @@
 var config = {};
 
 // Port
-config.port = process.env.PORT || 8081;
+config.port = process.env.PORT || 8080;
+config.securePort = process.env.SECURE_PORT || 8585;
 
 // Secret
 config.secret = 'ilovediables';
@@ -15,5 +16,9 @@ config.mongooseOptions = {
   user: 'myUserName',
   pass: 'myPassword'
 };
+
+// Keys
+config.privateKey = '';
+config.certificate = '';
 
 module.exports = config;
