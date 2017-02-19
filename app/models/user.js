@@ -26,6 +26,7 @@ var UserSchema = new Schema({
     default: false
   },
   group: String,
+  gluten: Boolean,
   eatType: {
     type: String,
     enum: [

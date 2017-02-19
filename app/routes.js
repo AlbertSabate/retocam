@@ -105,6 +105,7 @@ module.exports = function(express, app, jwt) {
       authToken: '',
       admin: false,
       group: req.body.group,
+      gluten: req.body.gluten,
       eatType: req.body.eatType,
       burgerIngredients: req.body.burgerIngredients,
       drink: req.body.drink,
@@ -294,6 +295,9 @@ module.exports = function(express, app, jwt) {
       }
       if (typeof req.body.group !== 'undefined') {
         user.group = req.body.group;
+      }
+      if (typeof req.body.gluten !== 'undefined') {
+        user.gluten = req.body.gluten;
       }
       if (typeof req.body.eatType !== 'undefined') {
         user.eatType = req.body.eatType;
