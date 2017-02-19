@@ -13,13 +13,6 @@ var jwt = require('jsonwebtoken');
 // Config files
 var config = require('./config/config');
 
-var privateKey  = fs.readFileSync(config.privateKey, 'utf8');
-var certificate = fs.readFileSync(config.certificate, 'utf8');
-var credentials = {
-  key: privateKey,
-  cert: certificate
-};
-
 // DB Connect
 mongoose.connect(config.mongooseUri, config.mongooseOptions);
 
@@ -39,9 +32,19 @@ app.use('/', router);
 
 // START THE SERVER
 var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
 
 httpServer.listen(config.port);
-httpsServer.listen(config.securePort);
 console.log('Server on port: ' + config.port);
-console.log('Secure Server on port: ' + config.securePort);
+
+// START THE SERVER HTTPS
+if (config.privateKey !== '' && config.certificate !== '') {
+  var privateKey  = fs.readFileSync(config.privateKey, 'utf8');
+  var certificate = fs.readFileSync(config.certificate, 'utf8');
+  var credentials = {
+    key: privateKey,
+    cert: certificate
+  };
+  var httpsServer = https.createServer(credentials, app);
+  httpsServer.listen(config.securePort);
+  console.log('Secure Server on port: ' + config.securePort);
+}
